@@ -1,102 +1,86 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(ParticleSystem))]
 public class RadiationEmitter : MonoBehaviour
 {
-    [SerializeField] private RadioactiveParticleData test_particle_data;
-    private ParticleSystem ps;
+    private ParticleSystem _particleSystem;
+    [Header("Path")]
+    [SerializeField] private float speed = 100f;
+    [SerializeField] private float drag = 5f;
 
-    // ------------------------------------------------------------------------------
+    [Header("Trail")]
+    [SerializeField] private    
+    float particle_interval = 1f;
+  
 
-    private void Awake()
+
+    void Start()
     {
-        ps = GetComponent<ParticleSystem>();
+        _particleSystem = GetComponent<ParticleSystem>();
+    }
+    
+    void Update()
+    {
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            emit_radiation_particle();
+        }
+    }
+    //----------------------------------------------------------------
+
+    void emit_radiation_particle()
+    {
+        var trailPositions = CalculateTrailPositions();
+        StartCoroutine(EmitTrailParticles(trailPositions));
     }
 
-    private void Start()
+    List<Vector3> CalculateTrailPositions()
     {
-        //create_particle(test_particle_data);
-        //ps.Emit(new ParticleSystem.EmitParams {position = position}, 1);
+        List<Vector3> positions = new List<Vector3>();
+
+        float distanceCovered = 0f;
+        float nextEmitDistance = 0f;
+        float t = 0f;
+        float dt = 0.001f;
+        Vector3 direction = Random.onUnitSphere;;
+
+        float totalDistance = speed / drag;
+
+        while (distanceCovered < totalDistance * 0.99f)
+        {
+            t += dt;
+
+            distanceCovered = (speed / drag) * (1f - Mathf.Exp(-drag * t));
+
+            if (distanceCovered >= nextEmitDistance)
+            {
+                Vector3 worldPos = transform.position + direction.normalized * distanceCovered;
+                positions.Add(worldPos);
+                nextEmitDistance += particle_interval;
+            }
+        }
+
+        return positions;
     }
 
-    private void Update()
-{
-    if (Keyboard.current.spaceKey.wasPressedThisFrame)
+    IEnumerator EmitTrailParticles(List<Vector3> positions)
     {
-        create_particle(test_particle_data);
-    }
+        var emitParams = new ParticleSystem.EmitParams();
+        int batchSize = 100; 
 
-    if (particle != null)
-    {
-        traverse_particle();
+        for (int i = 0; i < positions.Count; i += batchSize)
+        {
+            for (int j = i; j < Mathf.Min(i + batchSize, positions.Count); j++)
+            {
+                emitParams.position = positions[j];
+                emitParams.applyShapeToPosition = false;
+                _particleSystem.Emit(emitParams, 1);
+            }
+            yield return null;
+        }
     }
+    //----------------------------------------------------------------  
 }
-
-    // ------------------------------------------------------------------------------
-
-    RadioactiveParticleData current_particle_data;
-    class Particle
-    {
-        public Vector3 position;
-        public Vector3 last_position;
-        public Vector3 velocity;
-        public float lifetime;
-    }
-
-    Particle particle;
-
-    private void create_particle(RadioactiveParticleData data)
-    {
-        current_particle_data = data;
-        particle = new Particle
-        {
-            position = transform.position,
-            last_position = transform.position,
-            velocity = data.direction.normalized * data.speed,
-            lifetime = data.lifetime
-        };
-
-        
-    }
-
-    private ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
-    private void traverse_particle()
-    {
-        particle.last_position = particle.position;
-
-        particle.position += particle.velocity * Time.deltaTime;
-        particle.velocity *= current_particle_data.drag;
-        Debug.Log(particle.velocity.magnitude);
-
-        Vector3 delta = particle.position - particle.last_position;
-        float distance = delta.magnitude;
-
-        if (distance < 0.001f)
-        {
-            particle = null;
-            return;
-        }
-
-        Vector3 direction = delta / distance;
-        
-        float spacing = 1f;
-        int steps = Mathf.FloorToInt(distance / spacing);
-
-        if (steps <= 0)
-            return;
-
-        Vector3 start = particle.last_position;
-
-        for (int i = 1; i <= steps; i++)
-        {
-            Vector3 spawnPos = start + direction * (i * spacing);
-
-            emitParams.position = spawnPos;
-            //emitParams.velocity = Vector3.zero;
-            ps.Emit(emitParams, 1);
-        }
-    }
-}   
