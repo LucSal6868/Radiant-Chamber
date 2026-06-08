@@ -8,12 +8,16 @@ public class RadiationEmitter : MonoBehaviour
 {
     private ParticleSystem _particleSystem;
     [Header("Path")]
-    [SerializeField] private float speed = 100f;
-    [SerializeField] private float drag = 5f;
+    [SerializeField] private int length = 100;
+    [SerializeField] private float scatter_frequency = 10f; // 1 in x change of scattering at each step
+    [SerializeField] private float scatter_angle  = 25f; // angle of scattering in degrees
+    [SerializeField] private float scatter_smoothness = 0.1f; 
+
 
     [Header("Trail")]
-    [SerializeField] private    
-    float particle_interval = 1f;
+    [SerializeField] private int speed = 100;
+    [SerializeField] private float drag = 0.1f;
+    [SerializeField] private float particle_interval = 1f;
   
 
 
@@ -41,26 +45,28 @@ public class RadiationEmitter : MonoBehaviour
     {
         List<Vector3> positions = new List<Vector3>();
 
-        float distanceCovered = 0f;
-        float nextEmitDistance = 0f;
-        float t = 0f;
-        float dt = 0.001f;
-        Vector3 direction = Random.onUnitSphere;;
+        Vector3 direction = Random.onUnitSphere;
+        Vector3 targetDirection = direction;
+        Vector3 currentPos = transform.position;
+        float stepSize = particle_interval;
+        float smoothSpeed = scatter_smoothness;
 
-        float totalDistance = speed / drag;
+        int steps = Mathf.RoundToInt(length / stepSize);
 
-        while (distanceCovered < totalDistance * 0.99f)
+        for (int i = 0; i < steps; i++)
         {
-            t += dt;
-
-            distanceCovered = (speed / drag) * (1f - Mathf.Exp(-drag * t));
-
-            if (distanceCovered >= nextEmitDistance)
+            if (scatter_frequency!= 0 && Random.value < 1f / scatter_frequency)
             {
-                Vector3 worldPos = transform.position + direction.normalized * distanceCovered;
-                positions.Add(worldPos);
-                nextEmitDistance += particle_interval;
+                targetDirection = Quaternion.Euler(
+                    Random.Range(-scatter_angle, scatter_angle),
+                    Random.Range(-scatter_angle, scatter_angle),
+                    Random.Range(-scatter_angle, scatter_angle)
+                ) * direction;
             }
+
+            direction = Vector3.Slerp(direction, targetDirection, smoothSpeed);
+            currentPos += direction.normalized * stepSize;
+            positions.Add(currentPos);
         }
 
         return positions;
@@ -69,7 +75,7 @@ public class RadiationEmitter : MonoBehaviour
     IEnumerator EmitTrailParticles(List<Vector3> positions)
     {
         var emitParams = new ParticleSystem.EmitParams();
-        int batchSize = 100; 
+        int batchSize = speed;
 
         for (int i = 0; i < positions.Count; i += batchSize)
         {
@@ -79,6 +85,7 @@ public class RadiationEmitter : MonoBehaviour
                 emitParams.applyShapeToPosition = false;
                 _particleSystem.Emit(emitParams, 1);
             }
+            batchSize = Mathf.Max(1, Mathf.RoundToInt(batchSize * drag));
             yield return null;
         }
     }
