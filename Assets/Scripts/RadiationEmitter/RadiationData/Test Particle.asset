@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 29f85bd78b0f61a42a8711ea72ce406d, type: 3}
-  m_Name: Alpha Particle
+  m_Name: Test Particle
   m_EditorClassIdentifier: Assembly-CSharp::RadiationData
   length_range: {x: 100, y: 200}
   scatter_frequency: 0

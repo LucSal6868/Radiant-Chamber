@@ -81,7 +81,10 @@ public class RadiationEmitter : MonoBehaviour
 
             for (int j = i; j < end; j++)
             {
-                emitParams.position = positions[j] + Random.insideUnitSphere * data.particle_noise;
+                Vector3 travelDir = (positions[j] - (j > 0 ? positions[j-1] : transform.position)).normalized;
+                Vector3 noise = travelDir * Random.Range(-data.particle_noise, data.particle_noise);
+
+                emitParams.position = positions[j] + noise;
                 emitParams.applyShapeToPosition = false;
                 _particleSystem.Emit(emitParams, 1);
             }
