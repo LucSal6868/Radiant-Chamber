@@ -7,19 +7,7 @@ using UnityEngine.InputSystem;
 public class RadiationEmitter : MonoBehaviour
 {
     private ParticleSystem _particleSystem;
-    [Header("Path")]
-    [SerializeField] private int length = 100;
-    [SerializeField] private float scatter_frequency = 10f; // 1 in x change of scattering at each step
-    [SerializeField] private float scatter_angle  = 25f; // angle of scattering in degrees
-    [SerializeField] private float scatter_smoothness = 0.1f; 
-
-
-    [Header("Trail")]
-    [SerializeField] private int speed = 100;
-    [SerializeField] private float drag = 0.1f;
-    [SerializeField] private float particle_interval = 1f;
-  
-
+    [SerializeField] private RadiationData data;
 
     void Start()
     {
@@ -33,7 +21,6 @@ public class RadiationEmitter : MonoBehaviour
             emit_radiation_particle();
         }
     }
-    //----------------------------------------------------------------
 
     void emit_radiation_particle()
     {
@@ -41,6 +28,7 @@ public class RadiationEmitter : MonoBehaviour
         StartCoroutine(EmitTrailParticles(trailPositions));
     }
 
+    // GENERATE A LIST OF POSITIONS FOR THE PARTICLE TRAIL BASED ON THE RADIATION DATA SETTINGS
     List<Vector3> CalculateTrailPositions()
     {
         List<Vector3> positions = new List<Vector3>();
@@ -48,46 +36,59 @@ public class RadiationEmitter : MonoBehaviour
         Vector3 direction = Random.onUnitSphere;
         Vector3 targetDirection = direction;
         Vector3 currentPos = transform.position;
-        float stepSize = particle_interval;
-        float smoothSpeed = scatter_smoothness;
 
-        int steps = Mathf.RoundToInt(length / stepSize);
+        var len = Random.Range(data.length_range.x, data.length_range.y);
+        int steps = Mathf.RoundToInt(len / data.particle_interval);
 
         for (int i = 0; i < steps; i++)
-        {
-            if (scatter_frequency!= 0 && Random.value < 1f / scatter_frequency)
+        {   
+
+            // SCATTER PARTICLE DIRECTION
+            if (data.scatter_frequency != 0 && data.scatter_angle != 0 && Random.value < 1f / data.scatter_frequency)
             {
                 targetDirection = Quaternion.Euler(
-                    Random.Range(-scatter_angle, scatter_angle),
-                    Random.Range(-scatter_angle, scatter_angle),
-                    Random.Range(-scatter_angle, scatter_angle)
+                    Random.Range(-data.scatter_angle, data.scatter_angle),
+                    Random.Range(-data.scatter_angle, data.scatter_angle),
+                    Random.Range(-data.scatter_angle, data.scatter_angle)
                 ) * direction;
             }
+            // CONTINUE STRAIGHT
+            else
+            {
+                targetDirection = direction;
+            }
 
-            direction = Vector3.Slerp(direction, targetDirection, smoothSpeed);
-            currentPos += direction.normalized * stepSize;
+            direction = Vector3.Slerp(direction, targetDirection, data.scatter_smoothness);
+            currentPos += direction.normalized * data.particle_interval;
             positions.Add(currentPos);
         }
 
         return positions;
     }
 
+    // DRAW PARTICLE TRAIL OVER TIME BASED ON TRAIL GENERATED
+    // WILL DRAW [speed] NUMBER OF PARTICLES PER FRAME, WITH EXPONENTIAL DECAY BASED ON [drag]
     IEnumerator EmitTrailParticles(List<Vector3> positions)
     {
         var emitParams = new ParticleSystem.EmitParams();
-        int batchSize = speed;
+        float batchSize = data.speed;
+        int i = 0;
 
-        for (int i = 0; i < positions.Count; i += batchSize)
+        while (i < positions.Count)
         {
-            for (int j = i; j < Mathf.Min(i + batchSize, positions.Count); j++)
+            int count = Mathf.Max(1, Mathf.RoundToInt(batchSize));
+            int end = Mathf.Min(i + count, positions.Count);
+
+            for (int j = i; j < end; j++)
             {
-                emitParams.position = positions[j];
+                emitParams.position = positions[j] + Random.insideUnitSphere * data.particle_noise;
                 emitParams.applyShapeToPosition = false;
                 _particleSystem.Emit(emitParams, 1);
             }
-            batchSize = Mathf.Max(1, Mathf.RoundToInt(batchSize * drag));
+
+            i = end;
+            batchSize = Mathf.Max(1f, batchSize * (1f - data.drag));
             yield return null;
         }
     }
-    //----------------------------------------------------------------  
 }

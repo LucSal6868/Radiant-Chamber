@@ -284,7 +284,7 @@ ParticleSystemForceField:
   m_Parameters:
     m_Shape: 3
     m_StartRange: 0
-    m_EndRange: 100
+    m_EndRange: 1000
     m_Length: 1
     m_GravityFocus: 0
     m_RotationRandomness: {x: 0, y: 0}
@@ -941,10 +941,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91d6c903f630d1641b6535ae8634a04e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RadiationEmitter
-  length: 100
-  speed: 70
-  drag: 0.5
-  particle_interval: 1
+  data: {fileID: 11400000, guid: d1b16926c5057b34a97cb4830cae6872, type: 2}
 --- !u!199 &1763358947
 ParticleSystemRenderer:
   serializedVersion: 7
