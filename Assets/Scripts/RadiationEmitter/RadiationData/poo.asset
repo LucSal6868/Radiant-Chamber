@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 29f85bd78b0f61a42a8711ea72ce406d, type: 3}
-  m_Name: Test Particle
+  m_Name: poo
   m_EditorClassIdentifier: Assembly-CSharp::RadiationData
-  length_range: {x: 20, y: 100}
-  scatter_frequency: 0
-  scatter_angle: 0
-  scatter_smoothness: 0
+  length_range: {x: 50, y: 100}
+  scatter_frequency: 10
+  scatter_angle: 25
+  scatter_smoothness: 0.1
   speed: 100
-  drag: 0
-  particle_interval: 0.01
-  particle_noise: 10
+  drag: 0.01
+  particle_interval: 1
+  particle_noise: 0.01
