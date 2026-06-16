@@ -9,15 +9,27 @@ public class RadiationEmitter : MonoBehaviour
     private ParticleSystem _particleSystem;
     [SerializeField] private RadiationData data;
 
+    [SerializeField] private bool active = true;
+    private float _timer;
+
+
     void Start()
     {
         _particleSystem = GetComponent<ParticleSystem>();
     }
     
+
+    private float wait = 0f;
     void Update()
     {
-        if (Keyboard.current.spaceKey.wasPressedThisFrame)
-        {
+        if (!active) return;
+
+        _timer += Time.deltaTime;
+
+        if (_timer >= wait)
+        {   
+            wait = Random.Range(data.interval.x, data.interval.y);
+            _timer -= wait;
             emit_radiation_particle();
         }
     }

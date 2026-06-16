@@ -4,6 +4,7 @@ using UnityEngine;
 public class RadiationData : ScriptableObject
 {
     // RANDOM LENGTH OF PARTICLE
+    [Header("Particle")]
     public Vector2 length_range = new Vector2(50, 100);
     // 1 IN X CHANCE OF PARTICLE CHANGING DIRECTION
     public float scatter_frequency = 10f; 
@@ -22,4 +23,7 @@ public class RadiationData : ScriptableObject
     public float particle_interval = 1f;
     // RANDOMNESS OF PARTICLE POSITION IN TRAIL
     public float particle_noise = 0.01f;
+
+    [Header("Other")]
+    public Vector2 interval = new Vector2(0.25f, 0.5f);
 }

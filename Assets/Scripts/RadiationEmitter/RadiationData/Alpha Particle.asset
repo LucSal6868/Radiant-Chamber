@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29f85bd78b0f61a42a8711ea72ce406d, type: 3}
   m_Name: Alpha Particle
   m_EditorClassIdentifier: Assembly-CSharp::RadiationData
-  length_range: {x: 1, y: 1}
+  length_range: {x: 0.5, y: 1.5}
   scatter_frequency: 0
   scatter_angle: 0
   scatter_smoothness: 0
@@ -20,3 +20,4 @@ MonoBehaviour:
   drag: 0.05
   particle_interval: 0.01
   particle_noise: 0.1
+  interval: {x: 0.1, y: 0.5}
