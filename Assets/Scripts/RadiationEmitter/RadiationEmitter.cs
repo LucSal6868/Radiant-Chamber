@@ -12,6 +12,12 @@ public class RadiationEmitter : MonoBehaviour
     [SerializeField] private bool active = true;
     private float _timer;
 
+    [SerializeField] private BoxCollider boundingVolume;
+    bool IsInBounds(Vector3 pos)
+    {
+        if (boundingVolume == null) return true; // fail open if unassigned
+        return boundingVolume.bounds.Contains(pos);
+    }
 
     void Start()
     {
@@ -72,6 +78,8 @@ public class RadiationEmitter : MonoBehaviour
 
             direction = Vector3.Slerp(direction, targetDirection, data.scatter_smoothness);
             currentPos += direction.normalized * data.particle_interval;
+
+            if (!IsInBounds(currentPos)) break;
             positions.Add(currentPos);
         }
 
@@ -96,6 +104,9 @@ public class RadiationEmitter : MonoBehaviour
             {
                 Vector3 travelDir = (positions[j] - (j > 0 ? positions[j-1] : transform.position)).normalized;
                 Vector3 noise = travelDir * Random.Range(-data.particle_noise, data.particle_noise);
+                Vector3 finalPos = positions[j] + noise;
+
+                if (!IsInBounds(finalPos)) continue;
 
                 emitParams.position = positions[j] + noise;
                 emitParams.applyShapeToPosition = false;
