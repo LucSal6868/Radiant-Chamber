@@ -12,7 +12,7 @@ public class RadiationEmitter : MonoBehaviour
     [SerializeField] private bool active = true;
     private float _timer;
 
-    [SerializeField] private BoxCollider boundingVolume;
+    [SerializeField] public BoxCollider boundingVolume;
     bool IsInBounds(Vector3 pos)
     {
         if (boundingVolume == null) return true; // fail open if unassigned
