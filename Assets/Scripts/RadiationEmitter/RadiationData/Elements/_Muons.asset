@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RadiationData
   length_range: {x: 5, y: 10}
   scatter_frequency: 0
-  scatter_angle: 0
+  scatter_angle: 0.3
   scatter_smoothness: 0
   speed: 100
   drag: 0.05
   particle_interval: 0.01
-  particle_noise: 0.1
-  interval: {x: 0.5, y: 0.5}
+  particle_noise: 0
+  interval: {x: 1, y: 1}
