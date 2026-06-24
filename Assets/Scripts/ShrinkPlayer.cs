@@ -1,12 +1,15 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class ShrinkPlayer : MonoBehaviour
 {
     public float normalSize = 5f;
     public float shrinkSize = 1f;
     public float shrinkSpeed = 2f;
-    public Transform chamberSpawnPoint;   // TeleportOutsideChamber sphere position (inside chamber)
-    public Transform outsideSpawnPoint;   // TeleportInChamber sphere position (outside chamber)
+    public Transform chamberSpawnPoint;
+    public Transform outsideSpawnPoint;
+    public InputActionReference triggerAction;
 
     private bool isShrunk = false;
     private bool isTransitioning = false;
@@ -17,19 +20,23 @@ public class ShrinkPlayer : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
+        if (triggerAction != null) triggerAction.action.Enable();
     }
 
     void Update()
     {
-        // Trigger shrink (going IN)
-        if (Input.GetKeyDown(KeyCode.F) && canInteractIn && !isShrunk)
+        bool triggerPressed = triggerAction != null && triggerAction.action.WasPressedThisFrame();
+        bool pressed = Input.GetKeyDown(KeyCode.F) || triggerPressed;
+
+        Debug.Log("triggerPressed: " + triggerPressed + " | F: " + Input.GetKeyDown(KeyCode.F));
+
+        if (pressed && canInteractIn && !isShrunk)
         {
             isShrunk = true;
             isTransitioning = true;
         }
 
-        // Trigger grow (going OUT)
-        if (Input.GetKeyDown(KeyCode.F) && canInteractOut && isShrunk)
+        if (pressed && canInteractOut && isShrunk)
         {
             isShrunk = false;
             isTransitioning = true;
