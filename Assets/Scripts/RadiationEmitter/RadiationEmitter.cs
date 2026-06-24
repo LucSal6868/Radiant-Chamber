@@ -83,7 +83,6 @@ public class RadiationEmitter : MonoBehaviour
             positions.Add(currentPos);
         }
 
-        Debug.Log(positions.Count);
         return positions;
     }
 
