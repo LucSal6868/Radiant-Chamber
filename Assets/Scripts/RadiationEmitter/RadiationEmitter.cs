@@ -24,6 +24,10 @@ public class RadiationEmitter : MonoBehaviour
         _particleSystem = GetComponent<ParticleSystem>();
     }
     
+    public RadiationData GetData()
+    {
+        return data;
+    }
 
     private float wait = 0f;
     void Update()

@@ -1,8 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Beam : MonoBehaviour
 {
-
     public float floatStrength = 15f;
     public float damping = 4f;
     public bool counteractGravity = true;
@@ -16,36 +16,46 @@ public class Beam : MonoBehaviour
     public float spinStrength = 5f;
     public float spinDamping = 1f;
 
+    public Inspect inspectScript;
 
-    public Inspect inspectScript; // Reference to the Inspect script
+    [Header("info")]
+    [SerializeField] private List<RadiationData> radiationDataList = new List<RadiationData>();
+    [SerializeField] private List<GameObject> info_list = new List<GameObject>();
 
 
     void OnTriggerEnter(Collider other)
     {
-        inspectScript.FadeIn();
         Rigidbody rb = other.attachedRigidbody;
-        if (rb == null) return;
+        RadiationEmitter emitter = other.GetComponent<RadiationEmitter>();
+        if (rb == null || emitter == null) return;
 
-        // Release
+        RadiationData data = emitter.GetData();
+        if(radiationDataList.Contains(data))
+        {
+            for(int i = 0; i < radiationDataList.Count; i++)
+            {
+                info_list[i].SetActive(false);
+            }
+            info_list[radiationDataList.IndexOf(data)].SetActive(true);
+        }
+
+
+        inspectScript.FadeIn();
         ReleaseTarget();
 
-        // Take the new one
         currentTarget = rb;
         currentTarget.gameObject.layer = LayerMask.NameToLayer("INSPECT");
-        rb.useGravity = false;
+        //rb.useGravity = false;
     }
 
     void OnTriggerExit(Collider other)
     {
         Rigidbody rb = other.attachedRigidbody;
         if (rb == null || rb != currentTarget) return;
-        
+
         inspectScript.FadeOut();
-        currentTarget.gameObject.layer = 0;
-        currentTarget.useGravity = true;
         ReleaseTarget();
     }
-
 
     void FixedUpdate()
     {
@@ -58,26 +68,27 @@ public class Beam : MonoBehaviour
         if (counteractGravity)
             currentTarget.AddForce(-Physics.gravity * currentTarget.mass);
 
-        // Spin
         Vector3 currentSpin = currentTarget.angularVelocity;
         Vector3 desiredSpin = spinAxis.normalized * spinStrength;
         currentTarget.AddTorque((desiredSpin - currentSpin) * spinDamping);
     }
 
-
     void ReleaseTarget()
     {
         if (currentTarget == null) return;
+
         currentTarget.useGravity = true;
+        currentTarget.gameObject.layer = 0;
+
         Vector3 randomPos = Random.insideUnitSphere * 5f;
         Vector3 launchVector = Vector3.Scale(randomPos, new Vector3(1f, 0f, 1f));
         currentTarget.AddForce(launchVector, ForceMode.VelocityChange);
+
         currentTarget = null;
     }
 
     void OnDisable() => ReleaseTarget();
     void OnDestroy() => ReleaseTarget();
-
 
     void OnDrawGizmos()
     {
