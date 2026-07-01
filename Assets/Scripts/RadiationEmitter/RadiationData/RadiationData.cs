@@ -24,6 +24,10 @@ public class RadiationData : ScriptableObject
     // RANDOMNESS OF PARTICLE POSITION IN TRAIL
     public float particle_noise = 0.01f;
 
+    [Header("Appearance")]
+    public Color particleColor = Color.white;
+    public float particleSize = 0.1f;
+
     [Header("Other")]
     public Vector2 interval = new Vector2(0.25f, 0.5f);
 }
