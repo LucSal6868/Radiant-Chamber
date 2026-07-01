@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29f85bd78b0f61a42a8711ea72ce406d, type: 3}
+  m_Name: Polonium
+  m_EditorClassIdentifier: Assembly-CSharp::RadiationData
+  length_range: {x: 0.5, y: 1.5}
+  scatter_frequency: 0
+  scatter_angle: 0
+  scatter_smoothness: 0
+  speed: 100
+  drag: 0.05
+  particle_interval: 0.01
+  particle_noise: 0.1
+  interval: {x: 0.01, y: 0.25}

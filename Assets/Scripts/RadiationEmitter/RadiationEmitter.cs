@@ -9,15 +9,33 @@ public class RadiationEmitter : MonoBehaviour
     private ParticleSystem _particleSystem;
     [SerializeField] private RadiationData data;
 
+    [SerializeField] private bool active = true;
+    private float _timer;
+
+    [SerializeField] public BoxCollider boundingVolume;
+    bool IsInBounds(Vector3 pos)
+    {
+        if (boundingVolume == null) return true; // fail open if unassigned
+        return boundingVolume.bounds.Contains(pos);
+    }
+
     void Start()
     {
         _particleSystem = GetComponent<ParticleSystem>();
     }
     
+
+    private float wait = 0f;
     void Update()
     {
-        if (Keyboard.current.spaceKey.wasPressedThisFrame)
-        {
+        if (!active) return;
+
+        _timer += Time.deltaTime;
+
+        if (_timer >= wait)
+        {   
+            wait = Random.Range(data.interval.x, data.interval.y);
+            _timer -= wait;
             emit_radiation_particle();
         }
     }
@@ -60,6 +78,8 @@ public class RadiationEmitter : MonoBehaviour
 
             direction = Vector3.Slerp(direction, targetDirection, data.scatter_smoothness);
             currentPos += direction.normalized * data.particle_interval;
+
+            if (!IsInBounds(currentPos)) break;
             positions.Add(currentPos);
         }
 
@@ -84,6 +104,9 @@ public class RadiationEmitter : MonoBehaviour
             {
                 Vector3 travelDir = (positions[j] - (j > 0 ? positions[j-1] : transform.position)).normalized;
                 Vector3 noise = travelDir * Random.Range(-data.particle_noise, data.particle_noise);
+                Vector3 finalPos = positions[j] + noise;
+
+                if (!IsInBounds(finalPos)) continue;
 
                 emitParams.position = positions[j] + noise;
                 emitParams.applyShapeToPosition = false;
