@@ -26,4 +26,8 @@ public class RadiationData : ScriptableObject
 
     [Header("Other")]
     public Vector2 interval = new Vector2(0.25f, 0.5f);
+
+    [Header("Visuals")]
+    public Color particleColor = Color.white;
+    public float particleSize = 0.05f;
 }

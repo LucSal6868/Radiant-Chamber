@@ -78,7 +78,11 @@ public class MuonEmitter : MonoBehaviour
         for (int i = 0; i < steps; i++)
         {
             currentPos += direction * data.particle_interval;
-            if (!IsInBounds(currentPos)) break;
+            if (!IsInBounds(currentPos))
+            {
+                positions.Add(_boundingVolume.bounds.ClosestPoint(currentPos));
+                break;
+            }
             positions.Add(currentPos);
         }
 
@@ -88,6 +92,9 @@ public class MuonEmitter : MonoBehaviour
     IEnumerator EmitTrailParticles(List<Vector3> positions)
     {
         var emitParams = new ParticleSystem.EmitParams();
+        emitParams.startColor = data.particleColor;
+        emitParams.startSize = data.particleSize;
+
         float batchSize = data.speed;
         int i = 0;
 

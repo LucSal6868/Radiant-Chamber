@@ -63,8 +63,7 @@ public class RadiationEmitter : MonoBehaviour
         int steps = Mathf.RoundToInt(len / data.particle_interval);
 
         for (int i = 0; i < steps; i++)
-        {   
-
+        {
             // SCATTER PARTICLE DIRECTION
             if (data.scatter_frequency != 0 && data.scatter_angle != 0 && Random.value < 1f / data.scatter_frequency)
             {
@@ -83,7 +82,13 @@ public class RadiationEmitter : MonoBehaviour
             direction = Vector3.Slerp(direction, targetDirection, data.scatter_smoothness);
             currentPos += direction.normalized * data.particle_interval;
 
-            if (!IsInBounds(currentPos)) break;
+            if (!IsInBounds(currentPos))
+            {
+                // Snap the last particle to the chamber wall surface instead of going through it
+                if (boundingVolume != null)
+                    positions.Add(boundingVolume.bounds.ClosestPoint(currentPos));
+                break;
+            }
             positions.Add(currentPos);
         }
 
@@ -95,6 +100,9 @@ public class RadiationEmitter : MonoBehaviour
     IEnumerator EmitTrailParticles(List<Vector3> positions)
     {
         var emitParams = new ParticleSystem.EmitParams();
+        emitParams.startColor = data.particleColor;
+        emitParams.startSize = data.particleSize;
+
         float batchSize = data.speed;
         int i = 0;
 
@@ -111,7 +119,7 @@ public class RadiationEmitter : MonoBehaviour
 
                 if (!IsInBounds(finalPos)) continue;
 
-                emitParams.position = positions[j] + noise;
+                emitParams.position = finalPos;
                 emitParams.applyShapeToPosition = false;
                 _particleSystem.Emit(emitParams, 1);
             }

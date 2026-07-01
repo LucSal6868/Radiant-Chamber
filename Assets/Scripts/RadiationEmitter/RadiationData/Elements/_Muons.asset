@@ -17,7 +17,9 @@ MonoBehaviour:
   scatter_angle: 0.3
   scatter_smoothness: 0
   speed: 100
-  drag: 0.05
+  drag: 0.01
   particle_interval: 0.01
   particle_noise: 0
   interval: {x: 1, y: 1}
+  particleColor: {r: 0.867, g: 0.867, b: 1, a: 1}
+  particleSize: 0.025

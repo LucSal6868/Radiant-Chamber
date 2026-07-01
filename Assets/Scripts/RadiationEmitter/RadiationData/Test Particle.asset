@@ -20,3 +20,5 @@ MonoBehaviour:
   drag: 0
   particle_interval: 0.01
   particle_noise: 10
+  particleColor: {r: 1, g: 0.5, b: 0, a: 1}
+  particleSize: 0.05

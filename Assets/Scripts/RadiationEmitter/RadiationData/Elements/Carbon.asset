@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29f85bd78b0f61a42a8711ea72ce406d, type: 3}
   m_Name: Carbon
   m_EditorClassIdentifier: Assembly-CSharp::RadiationData
-  length_range: {x: 10, y: 25}
-  scatter_frequency: 5
-  scatter_angle: 25
-  scatter_smoothness: 0.5
+  length_range: {x: 5, y: 15}
+  scatter_frequency: 4
+  scatter_angle: 35
+  scatter_smoothness: 0.6
   speed: 100
   drag: 0.05
   particle_interval: 0.01
-  particle_noise: 0.1
+  particle_noise: 0.12
   interval: {x: 1, y: 2}
+  particleColor: {r: 0.667, g: 1, b: 0.133, a: 1}
+  particleSize: 0.035

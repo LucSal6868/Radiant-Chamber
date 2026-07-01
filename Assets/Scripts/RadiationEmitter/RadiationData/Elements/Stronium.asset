@@ -19,5 +19,7 @@ MonoBehaviour:
   speed: 100
   drag: 0.05
   particle_interval: 0.01
-  particle_noise: 0
+  particle_noise: 0.1
   interval: {x: 0.1, y: 0.5}
+  particleColor: {r: 0.467, g: 1, b: 0.133, a: 1}
+  particleSize: 0.04
